@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Caminho do Tesouro</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f0e68c;
+      text-align: center;
+    }
+
+    #inicio {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    #inicio button {
+      padding: 20px 40px;
+      font-size: 24px;
+      cursor: pointer;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(to right, #ff8177, #ffcc70);
+      color: white;
+      box-shadow: 0 5px 15px #0004;
+      transition: 0.3s;
+    }
+
+    #inicio button:hover {
+      transform: scale(1.05);
+    }
+
+    #mapa {
+      display: none;
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: url('mapa.png') no-repeat center center;
+      background-size: cover;
+    }
+
+    .casilla {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #fff8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 36px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 4px 10px #0004;
+    }
+
+    .casilla:hover {
+      transform: scale(1.1);
+    }
+
+    input {
+      margin-top: 10px;
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 2px solid #444;
+      width: 70%;
+      text-align: center;
+    }
+
+    .agujero {
+      font-size: 36px;
+      color: brown;
+    }
+
+    #tesouro {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 28px;
+      font-weight: bold;
+      color: darkgreen;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="inicio">
+    <h1>🏴‍☠️ Caminho do Tesouro</h1>
+    <button onclick="comenzar()">Comenzar Juego</button>
+  </div>
+
+  <div id="mapa">
+    <!-- Casillas -->
+    <div class="casilla" id="casilla1" style="top: 20%; left: 15%;" onclick="abrirCasilla(1)">X</div>
+    <div class="casilla" id="casilla2" style="top: 40%; left: 35%;" onclick="abrirCasilla(2)">X</div>
+    <div class="casilla" id="casilla3" style="top: 60%; left: 50%;" onclick="abrirCasilla(3)">X</div>
+    <div class="casilla" id="casilla4" style="top: 35%; left: 70%;" onclick="abrirCasilla(4)">X</div>
+    <div class="casilla" id="casilla5" style="top: 60%; left: 85%;" onclick="abrirCasilla(5)">X</div>
+
+    <div id="tesouro">🎉 Parabéns! Você encontrou o tesouro! 🪙💎<br>🙏 Obrigado por jogar, este é o final.</div>
+  </div>
+
+  <script>
+    const contrasenas = ['mercosul', 'migracao', 'maya', 'caes', 'amazonia'];
+
+    let progreso = JSON.parse(localStorage.getItem('progreso')) || [false,false,false,false,false];
+
+    function comenzar() {
+      document.getElementById('inicio').style.display = 'none';
+      document.getElementById('mapa').style.display = 'block';
+      actualizarCasillas();
+      verificarTesouro();
+    }
+
+    function actualizarCasillas() {
+      for(let i=0;i<5;i++){
+        const casilla = document.getElementById('casilla'+(i+1));
+        if(progreso[i]){
+          casilla.innerHTML = '🕳️';
+        } else {
+          casilla.innerHTML = 'X';
+        }
+      }
+    }
+
+    function abrirCasilla(num){
+      if(progreso[num-1]) return; // ya desbloqueada
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Escribe la contraseña';
+      input.id = 'input'+num;
+
+      const casilla = document.getElementById('casilla'+num);
+      casilla.innerHTML = '';
+      casilla.appendChild(input);
+      input.focus();
+
+      input.addEventListener('keypress', function(e){
+        if(e.key === 'Enter'){
+          if(input.value.trim().toLowerCase() === contrasenas[num-1]){
+            progreso[num-1] = true;
+            localStorage.setItem('progreso', JSON.stringify(progreso));
+            casilla.innerHTML = '🕳️';
+            verificarTesouro();
+          } else {
+            alert('❌ Contraseña incorrecta, intenta de novo.');
+            input.value = '';
+          }
+        }
+      });
+    }
+
+    function verificarTesouro(){
+      if(progreso.every(v => v)){
+        document.getElementById('tesouro').style.display = 'block';
+      }
+    }
+
+    // Al cargar la página, actualizar casillas si hay progreso
+    window.onload = function(){
+      if(progreso.some(v=>v)){
+        comenzar();
+      }
+    }
+  </script>
+</body>
+</html>
