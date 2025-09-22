@@ -154,8 +154,6 @@
             alert('❌ Contraseña incorrecta, intenta de novo.');
             input.value = '';
           }
-        }
-      });
     }
 
     function verificarTesouro(){
@@ -169,6 +167,20 @@
       if(progreso.some(v=>v)){
         comenzar();
       }
+      <div id="final" class="fase">
+  <p class="tesouro">🎉 Parabéns! Você encontrou o tesouro escondido! 🪙💎</p>
+  <p class="final">🙏 Obrigado por jogar, este é o final.</p>
+  <button onclick="reiniciarJogo()">🔄 Reiniciar jogo</button>
+</div>
+
+<script>
+function reiniciarJogo() {
+  if (confirm("Tem certeza que deseja reiniciar o jogo?")) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+</script>
     }
   </script>
 </body>
